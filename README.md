@@ -5,7 +5,6 @@
 
 - 📫 How to reach me **sritamachatterjee422@gmail.com**
 
-- 📄 Know about my experiences [https://drive.google.com/file/d/16HBU3bA3x4dIyFnapl2LRg5ZWxtn2NhT/view?usp=drivesdk](https://drive.google.com/file/d/16HBU3bA3x4dIyFnapl2LRg5ZWxtn2NhT/view?usp=drivesdk)
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
