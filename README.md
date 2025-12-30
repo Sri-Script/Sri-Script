@@ -1,7 +1,7 @@
 <h1 align="center">Hi 👋, I'm Sritama</h1>
 <h3 align="center">A passionate Application Developer from India</h3>
 
-- 🌱 Continuously growing my expertise in application development.
+- 🌱 Continuously growing my expertise in App development.
 
 - 📫 How to reach me **sritamachatterjee422@gmail.com**
 
