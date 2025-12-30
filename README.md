@@ -3,7 +3,7 @@
 
 - 🌱 Continuously growing my expertise in App development.
 
-- 📫 How to reach me **sritamachatterjee422@gmail.com**
+- 📫 How to out reach me **sritamachatterjee422@gmail.com**
 
 
 <h3 align="left">Connect with me:</h3>
