@@ -1,5 +1,5 @@
 <h1 align="center">Hi 👋, I'm Sritama</h1>
-<h3 align="center">A passionate and b Application Developer from India</h3>
+<h3 align="center">A passionate and bud Application Developer from India</h3>
 
 - 🌱 Continuously growing my expertise in App development.
 
