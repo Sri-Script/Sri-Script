@@ -37,7 +37,7 @@ jobs:
         uses: crazy-max/ghaction-github-pages@v4
         with:
           target_branch: output
-          build_dir: dist
+          build_dir: .   # <--- Changed from 'dist' to '.' to fix the error!
           commit_message: "chore: update pac-man contribution graph [skip ci]"
           jekyll: false   # Disable Jekyll so SVGs are served raw
         env:
