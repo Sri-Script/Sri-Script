@@ -21,24 +21,19 @@ jobs:
       - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
 
+      # Generates the SVG and places it directly inside your existing docs folder
       - name: 🎮 Generate Pac-Man contribution graph SVG
         uses: abozanona/pacman-contribution-graph@main
         with:
           github_user_name: ${{ github.repository_owner }}
-          outputs_folder: dist  # Puts the generated graphic inside a folder named 'dist'
+          outputs_folder: docs
 
-      # ─── NEW CRITICAL STEP ────────────────────────────────────────────────
-      # This explicitly copies your index.html into the 'dist' folder 
-      # so it gets bundled up and deployed together with your assets!
-      - name: 📝 Stage frontend entrypoint for deployment
-        run: |
-          cp index.html dist/
-
+      # Deploys the entire docs folder (which now holds index.html + the SVG)
       - name: 🚀 Deploy complete bundle to 'output' branch
         uses: crazy-max/ghaction-github-pages@v4
         with:
           target_branch: output
-          build_dir: dist  # Deploys the folder containing BOTH index.html and the SVG
+          build_dir: docs  # Points directly to your docs directory
           commit_message: "chore: update pac-man contribution graph [skip ci]"
           jekyll: false
         env:
