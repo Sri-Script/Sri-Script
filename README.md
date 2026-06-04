@@ -36,11 +36,11 @@
 <div align="center">
   <picture>
    <source media="(prefers-color-scheme: dark)"
-        srcset="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/docs/pacman-contribution-graph-dark.svg" />
+        srcset="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/pacman-contribution-graph-dark.svg" />
 <source media="(prefers-color-scheme: light)"
-        srcset="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/docs/pacman-contribution-graph.svg" />
+        srcset="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/pacman-contribution-graph.svg" />
 <img alt="Pac-Man eating my GitHub contributions"
-     src="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/docs/pacman-contribution-graph.svg" />
+     src="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/pacman-contribution-graph.svg" />
   </picture>
 
   <!-- INTERACTIVE GAME BUTTON -->
