@@ -16,7 +16,7 @@
       --pac-orange: #FFB852;
       --dot-color:  #FFB8AE;
       --wall-color: #1a3a8f;
-      --bg:         #000010;
+      --bg:          #000010;
       --text:       #FFE000;
     }
 
@@ -138,7 +138,7 @@
 </head>
 <body>
 
-<h1>🕹 PAC-MAN COMMIT EATER</h1>
+<h1>🕹 SRITAMA'S COMMIT EATER</h1>
 <p class="subtitle">CONTRIBUTION GRAPH &mdash; EAT YOUR COMMITS</p>
 
 <div class="hud">
@@ -203,8 +203,6 @@ const POINT_VALUES = [0, 10, 30, 60, 100];
 const GHOST_COLS = ['#FF0000','#FFB8FF','#00FFFF','#FFB852'];
 
 // ─── CONTRIBUTION DATA GENERATOR ───────────────────────────────────────────
-// Generates realistic-looking contribution data.
-// In production replace with real data fetched from your workflow.
 function generateContributions() {
   const data = [];
   let seed = Date.now() % 99991;
@@ -213,7 +211,6 @@ function generateContributions() {
   for (let w = 0; w < COLS; w++) {
     data[w] = [];
     for (let d = 0; d < ROWS; d++) {
-      // Simulate realistic pattern: streaks and quiet periods
       const base  = Math.pow(rng(), 3);
       const burst = rng() > 0.85 ? rng() * 15 : 0;
       const val   = Math.floor(base * 8 + burst);
@@ -235,7 +232,7 @@ function intensityTier(commits) {
 const canvas   = document.getElementById('gameCanvas');
 const ctx      = canvas.getContext('2d');
 const W        = COLS * STEP + PAD;
-const H        = ROWS * STEP + PAD + 40; // extra for month labels
+const H        = ROWS * STEP + PAD + 40; 
 
 canvas.width   = W;
 canvas.height  = H;
@@ -264,31 +261,28 @@ function initGame() {
   deathTimer= 0;
   state     = 'idle';
 
-  // Build dot list from contributions
   totalDots = 0;
   for (let w = 0; w < COLS; w++) {
     dots[w] = [];
     for (let d = 0; d < ROWS; d++) {
       const tier    = intensityTier(contribs[w][d]);
       const active  = tier > 0;
-      const power   = contribs[w][d] >= 15; // big days = power pellet
+      const power   = contribs[w][d] >= 15; 
       dots[w][d]    = { tier, active, power, eaten: false };
       if (active) totalDots++;
     }
   }
 
-  // Pac-Man starts top-left
   pacX   = 0; pacY   = 0;
   pacDX  = 1; pacDY  = 0;
   nextDX = 1; nextDY = 0;
   pacMouth = 0;
-  pacDir   = 0; // angle offset 0=right
+  pacDir   = 0; 
 
-  // 4 ghosts placed at corners + middle
   ghosts = [
-    { cx: COLS-1, cy: 0,      dx: -1, dy: 0,  color: GHOST_COLS[0], mode: 'chase',     scatter: 240 },
-    { cx: 0,      cy: ROWS-1, dx: 1,  dy: 0,  color: GHOST_COLS[1], mode: 'scatter',   scatter: 180 },
-    { cx: COLS-1, cy: ROWS-1, dx: -1, dy: 0,  color: GHOST_COLS[2], mode: 'chase',     scatter: 300 },
+    { cx: COLS-1, cy: 0,      dx: -1, dy: 0,  color: GHOST_COLS[0], mode: 'chase',   scatter: 240 },
+    { cx: 0,      cy: ROWS-1, dx: 1,  dy: 0,  color: GHOST_COLS[1], mode: 'scatter', scatter: 180 },
+    { cx: COLS-1, cy: ROWS-1, dx: -1, dy: 0,  color: GHOST_COLS[2], mode: 'chase',   scatter: 300 },
     { cx: COLS/2|0, cy: ROWS/2|0, dx: 1, dy: 0, color: GHOST_COLS[3], mode: 'scatter', scatter: 120 },
   ];
 
@@ -296,7 +290,6 @@ function initGame() {
   lastTime = null;
 }
 
-// ─── HUD UPDATE ────────────────────────────────────────────────────────────
 function updateHUD() {
   document.getElementById('score-val').textContent = score;
   document.getElementById('eaten-val').textContent = `${eaten}/${totalDots}`;
@@ -313,11 +306,9 @@ function cellXY(w, d) {
 }
 
 function drawGrid() {
-  // background
   ctx.fillStyle = '#000010';
   ctx.fillRect(0, 0, W, H);
 
-  // Month labels (simplified)
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   ctx.fillStyle = '#555';
   ctx.font = '8px monospace';
@@ -325,7 +316,6 @@ function drawGrid() {
     ctx.fillText(months[m], m * (W / 12), 12);
   }
 
-  // Contribution cells
   for (let w = 0; w < COLS; w++) {
     for (let d = 0; d < ROWS; d++) {
       const {x, y} = cellXY(w, d);
@@ -337,7 +327,6 @@ function drawGrid() {
       }
       ctx.fillRect(x, y, CELL, CELL);
 
-      // Power pellet glow
       if (!dot.eaten && dot.power) {
         ctx.save();
         ctx.shadowBlur  = 8;
@@ -347,7 +336,6 @@ function drawGrid() {
         ctx.restore();
       }
 
-      // Dot overlay for active uneaten cells
       if (!dot.eaten && dot.active && !dot.power) {
         const pulse = 0.6 + 0.4 * Math.sin(Date.now() / 400 + w + d);
         ctx.globalAlpha = pulse * 0.5;
@@ -369,7 +357,7 @@ function drawPacman() {
   pacMouth = (pacMouth + 0.18) % (Math.PI / 2);
   const open = Math.abs(Math.sin(pacMouth)) * 0.4;
 
-  const angles = [0, Math.PI/2, Math.PI, -Math.PI/2]; // right, down, left, up
+  const angles = [0, Math.PI/2, Math.PI, -Math.PI/2]; 
   let dirIdx = 0;
   if      (pacDX ===  1) dirIdx = 0;
   else if (pacDY ===  1) dirIdx = 1;
@@ -377,7 +365,6 @@ function drawPacman() {
   else if (pacDY === -1) dirIdx = 3;
   const angle = angles[dirIdx];
 
-  // Glow
   ctx.save();
   ctx.shadowBlur  = powerTimer > 0 ? 18 : 8;
   ctx.shadowColor = powerTimer > 0 ? '#ff0' : '#FFE000aa';
@@ -389,7 +376,6 @@ function drawPacman() {
   ctx.closePath();
   ctx.fill();
 
-  // Eye
   const eyeAngle = angle - Math.PI * 0.35;
   ctx.fillStyle = '#000';
   ctx.beginPath();
@@ -411,7 +397,6 @@ function drawGhosts(dt) {
 
     ctx.beginPath();
     ctx.arc(cx, cy - 1, r, Math.PI, 0);
-    // wavy skirt
     const skirtY = cy - 1 + r;
     const seg    = (CELL - 2) / 3;
     ctx.lineTo(x + CELL - 1, skirtY);
@@ -423,7 +408,6 @@ function drawGhosts(dt) {
     ctx.closePath();
     ctx.fill();
 
-    // Eyes
     if (!scared) {
       [[cx - 3, cy - 2],[cx + 2, cy - 2]].forEach(([ex, ey]) => {
         ctx.fillStyle = '#fff';
@@ -443,7 +427,10 @@ function drawOverlay() {
     ctx.fillStyle = '#FFE000';
     ctx.font      = '14px "Press Start 2P", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('PRESS START', W/2, H/2 - 10);
+    
+    // PERSONALIZED OVERLAY HEADER
+    ctx.fillText("SRITAMA'S GRID", W/2, H/2 - 10);
+    
     ctx.font      = '8px "Press Start 2P", monospace';
     ctx.fillStyle = '#00FFFF';
     ctx.fillText('EAT ALL COMMITS!', W/2, H/2 + 14);
@@ -488,30 +475,27 @@ function drawOverlay() {
 
 // ─── MOVEMENT LOGIC ────────────────────────────────────────────────────────
 let pacTimer = 0;
-const PAC_SPEED = 180; // ms per cell
+const PAC_SPEED = 180; 
 
 let ghostTimer = 0;
-const GHOST_SPEED = 320; // ms per cell
+const GHOST_SPEED = 320; 
 
 function movePacman(dt) {
   pacTimer += dt;
   if (pacTimer < PAC_SPEED) return;
   pacTimer -= PAC_SPEED;
 
-  // Try queued direction first
   const nx = pacX + nextDX, ny = pacY + nextDY;
   if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS) {
     pacDX = nextDX; pacDY = nextDY;
   }
 
   const mx = pacX + pacDX, my = pacY + pacDY;
-  // Wrap horizontally
   if (mx < 0)    { pacX = COLS - 1; } 
   else if (mx >= COLS) { pacX = 0; }
-  else if (my < 0 || my >= ROWS) { /* hit vertical border, stop */ }
+  else if (my < 0 || my >= ROWS) { }
   else           { pacX = mx; pacY = my; }
 
-  // Eat dot
   const dot = dots[pacX]?.[pacY];
   if (dot && dot.active && !dot.eaten) {
     dot.eaten = true;
@@ -542,7 +526,6 @@ function moveGhosts(dt) {
       g.scatter = 60 + (Math.random() * 120 | 0);
     }
 
-    // Simple pathfinding: 30% chance to chase pac, else random
     if (!powerTimer && Math.random() < 0.3) {
       const ax = Math.sign(pacX - g.cx), ay = Math.sign(pacY - g.cy);
       if (ax !== 0 || ay !== 0) { g.dx = ax; g.dy = ay; }
@@ -556,16 +539,13 @@ function moveGhosts(dt) {
     }
   }
 
-  // Collision check
   for (const g of ghosts) {
     if (g.cx === pacX && g.cy === pacY) {
       if (powerTimer > 0) {
-        // eat ghost
         score += 200;
         g.cx = COLS/2|0; g.cy = ROWS/2|0;
         updateHUD();
       } else {
-        // pac dies
         lives--;
         streak = 0;
         updateHUD();
@@ -599,12 +579,11 @@ function loop(ts) {
     deathTimer -= dt;
     if (deathTimer <= 0) {
       if (lives > 0) {
-        // respawn
         pacX = 0; pacY = 0; pacDX = 1; pacDY = 0; nextDX = 1; nextDY = 0;
         state = 'playing';
         setMsg('');
       } else {
-        state = 'dead'; // permanent
+        state = 'dead'; 
       }
     }
   }
