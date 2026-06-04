@@ -1,5 +1,4 @@
 name: 🕹️ Pac-Man Contribution Graph
-
 on:
   schedule:
     - cron: "0 0 * * *"
@@ -13,7 +12,6 @@ jobs:
     name: Generate & Deploy Pac-Man Graph
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     permissions:
       contents: write
 
@@ -21,19 +19,19 @@ jobs:
       - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
 
-      # Generates the SVG and places it directly inside your existing docs folde
-      - name: 🎮 Generate Pac-Man contribution graph SVG
-        uses: abozanona/pacman-contribution-graph@main
+      - name: 🎮 Generate Pac-Man SVGs
+        uses: Platane/snk@v3
         with:
           github_user_name: ${{ github.repository_owner }}
-          outputs_folder: docs
+          outputs: |
+            docs/pacman-contribution-graph.svg?palette=github
+            docs/pacman-contribution-graph-dark.svg?palette=github-dark&animate=true
 
-      # Deploys the entire docs folder (which now holds index.html + the SVG)
-      - name: 🚀 Deploy complete bundle to 'output' branch
+      - name: 🚀 Deploy to output branch
         uses: crazy-max/ghaction-github-pages@v4
         with:
           target_branch: output
-          build_dir: docs  # Points directly to your docs directory
+          build_dir: docs
           commit_message: "chore: update pac-man contribution graph [skip ci]"
           jekyll: false
         env:
