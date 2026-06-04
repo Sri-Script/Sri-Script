@@ -21,7 +21,7 @@ jobs:
       - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
 
-      # Generates the SVG and places it directly inside your existing docs folder
+      # Generates the SVG and places it directly inside your existing docs folde
       - name: 🎮 Generate Pac-Man contribution graph SVG
         uses: abozanona/pacman-contribution-graph@main
         with:
