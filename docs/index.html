@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pac-Man Commit Eater</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    :root {
+      --pac-yellow: #FFE000;
+      --pac-blue:   #1A1AFF;
+      --pac-cyan:   #00FFFF;
+      --pac-red:    #FF0000;
+      --pac-pink:   #FFB8FF;
+      --pac-orange: #FFB852;
+      --dot-color:  #FFB8AE;
+      --wall-color: #1a3a8f;
+      --bg:         #000010;
+      --text:       #FFE000;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Press Start 2P', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px 40px;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: clamp(12px, 2.5vw, 20px);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      color: var(--pac-yellow);
+      text-shadow: 0 0 16px #FFE00066;
+    }
+
+    .subtitle {
+      font-size: clamp(7px, 1.2vw, 10px);
+      color: var(--pac-cyan);
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+    }
+
+    /* --- HUD --- */
+    .hud {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-size: clamp(7px, 1.5vw, 10px);
+    }
+
+    .hud-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .hud-val  { font-size: clamp(12px, 2vw, 18px); color: #fff; }
+
+    /* --- Canvas wrapper --- */
+    #canvas-wrap {
+      position: relative;
+      border: 3px solid var(--wall-color);
+      box-shadow: 0 0 30px var(--wall-color), inset 0 0 60px #00001888;
+    }
+
+    canvas { display: block; }
+
+    /* --- Controls --- */
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      background: transparent;
+      color: var(--pac-yellow);
+      border: 2px solid var(--pac-yellow);
+      padding: 8px 14px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: background 0.15s, color 0.15s;
+    }
+    button:hover  { background: var(--pac-yellow); color: #000; }
+    button:active { transform: scale(0.97); }
+
+    /* d-pad for mobile */
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 4px;
+      margin-top: 16px;
+    }
+    .dpad button {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dpad .empty { background: transparent; border: none; cursor: default; }
+    .dpad .empty:hover { background: transparent; }
+
+    .legend {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-size: 7px;
+      color: #aaa;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot  { width: 10px; height: 10px; border-radius: 50%; }
+
+    #msg {
+      margin-top: 14px;
+      font-size: 9px;
+      color: var(--pac-cyan);
+      min-height: 18px;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🕹 PAC-MAN COMMIT EATER</h1>
+<p class="subtitle">CONTRIBUTION GRAPH &mdash; EAT YOUR COMMITS</p>
+
+<div class="hud">
+  <div class="hud-item"><span>SCORE</span><span class="hud-val" id="score-val">0</span></div>
+  <div class="hud-item"><span>EATEN</span><span class="hud-val" id="eaten-val">0/0</span></div>
+  <div class="hud-item"><span>STREAK</span><span class="hud-val" id="streak-val">0</span></div>
+  <div class="hud-item"><span>LIVES</span><span class="hud-val" id="lives-val">&#x1F7E1;&#x1F7E1;&#x1F7E1;</span></div>
+</div>
+
+<div id="canvas-wrap">
+  <canvas id="gameCanvas"></canvas>
+</div>
+
+<div id="msg">PRESS SPACE OR TAP START TO PLAY</div>
+
+<div class="controls">
+  <button id="btn-start">▶ START</button>
+  <button id="btn-pause">⏸ PAUSE</button>
+  <button id="btn-reset">↺ RESET</button>
+</div>
+
+<div class="dpad" id="dpad" aria-label="D-Pad controls">
+  <div class="empty"></div>
+  <button data-dir="up"    aria-label="Up">▲</button>
+  <div class="empty"></div>
+  <button data-dir="left"  aria-label="Left">◀</button>
+  <div class="empty"></div>
+  <button data-dir="right" aria-label="Right">▶</button>
+  <div class="empty"></div>
+  <button data-dir="down"  aria-label="Down">▼</button>
+  <div class="empty"></div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#444"></div><span>0 commits</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#0e4429"></div><span>1–3</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#006d32"></div><span>4–6</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#26a641"></div><span>7–9</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#39d353"></div><span>10+</span></div>
+</div>
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────────────────
+const CELL  = 14;    // px per contribution cell
+const COLS  = 53;    // weeks in a year
+const ROWS  = 7;     // days in a week
+const PAD   = 3;     // gap between cells
+const STEP  = CELL + PAD;
+
+const CONTRIBUTION_COLORS = [
+  '#1a1a2e',  // 0 commits  → dark
+  '#0e4429',  // 1-3
+  '#006d32',  // 4-6
+  '#26a641',  // 7-9
+  '#39d353',  // 10+
+];
+
+// Point values per intensity tier
+const POINT_VALUES = [0, 10, 30, 60, 100];
+
+// Ghost palette
+const GHOST_COLS = ['#FF0000','#FFB8FF','#00FFFF','#FFB852'];
+
+// ─── CONTRIBUTION DATA GENERATOR ───────────────────────────────────────────
+// Generates realistic-looking contribution data.
+// In production replace with real data fetched from your workflow.
+function generateContributions() {
+  const data = [];
+  let seed = Date.now() % 99991;
+  const rng = () => { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return Math.abs(seed) / 0x80000000; };
+
+  for (let w = 0; w < COLS; w++) {
+    data[w] = [];
+    for (let d = 0; d < ROWS; d++) {
+      // Simulate realistic pattern: streaks and quiet periods
+      const base  = Math.pow(rng(), 3);
+      const burst = rng() > 0.85 ? rng() * 15 : 0;
+      const val   = Math.floor(base * 8 + burst);
+      data[w][d]  = Math.min(val, 20);
+    }
+  }
+  return data;
+}
+
+function intensityTier(commits) {
+  if (commits === 0) return 0;
+  if (commits < 4)  return 1;
+  if (commits < 7)  return 2;
+  if (commits < 10) return 3;
+  return 4;
+}
+
+// ─── CANVAS SETUP ──────────────────────────────────────────────────────────
+const canvas   = document.getElementById('gameCanvas');
+const ctx      = canvas.getContext('2d');
+const W        = COLS * STEP + PAD;
+const H        = ROWS * STEP + PAD + 40; // extra for month labels
+
+canvas.width   = W;
+canvas.height  = H;
+document.getElementById('canvas-wrap').style.width = W + 'px';
+
+// ─── GAME STATE ────────────────────────────────────────────────────────────
+let contribs, dots, score, eaten, totalDots, lives, streak, bestStreak;
+let pacX, pacY, pacDX, pacDY, nextDX, nextDY;
+let pacMouth, pacDir;
+let ghosts;
+let state;       // 'idle' | 'playing' | 'paused' | 'dead' | 'win'
+let animFrame;
+let lastTime;
+let powerTimer;  // ms remaining on power pellet
+let deathTimer;
+
+function initGame() {
+  contribs  = generateContributions();
+  dots      = [];
+  score     = 0;
+  eaten     = 0;
+  lives     = 3;
+  streak    = 0;
+  bestStreak= 0;
+  powerTimer= 0;
+  deathTimer= 0;
+  state     = 'idle';
+
+  // Build dot list from contributions
+  totalDots = 0;
+  for (let w = 0; w < COLS; w++) {
+    dots[w] = [];
+    for (let d = 0; d < ROWS; d++) {
+      const tier    = intensityTier(contribs[w][d]);
+      const active  = tier > 0;
+      const power   = contribs[w][d] >= 15; // big days = power pellet
+      dots[w][d]    = { tier, active, power, eaten: false };
+      if (active) totalDots++;
+    }
+  }
+
+  // Pac-Man starts top-left
+  pacX   = 0; pacY   = 0;
+  pacDX  = 1; pacDY  = 0;
+  nextDX = 1; nextDY = 0;
+  pacMouth = 0;
+  pacDir   = 0; // angle offset 0=right
+
+  // 4 ghosts placed at corners + middle
+  ghosts = [
+    { cx: COLS-1, cy: 0,      dx: -1, dy: 0,  color: GHOST_COLS[0], mode: 'chase',     scatter: 240 },
+    { cx: 0,      cy: ROWS-1, dx: 1,  dy: 0,  color: GHOST_COLS[1], mode: 'scatter',   scatter: 180 },
+    { cx: COLS-1, cy: ROWS-1, dx: -1, dy: 0,  color: GHOST_COLS[2], mode: 'chase',     scatter: 300 },
+    { cx: COLS/2|0, cy: ROWS/2|0, dx: 1, dy: 0, color: GHOST_COLS[3], mode: 'scatter', scatter: 120 },
+  ];
+
+  updateHUD();
+  lastTime = null;
+}
+
+// ─── HUD UPDATE ────────────────────────────────────────────────────────────
+function updateHUD() {
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('eaten-val').textContent = `${eaten}/${totalDots}`;
+  document.getElementById('streak-val').textContent = bestStreak;
+  const life_icons = ['🟡','🟡','🟡'].slice(0, lives).join('') || '💀';
+  document.getElementById('lives-val').textContent = life_icons;
+}
+
+function setMsg(t) { document.getElementById('msg').textContent = t; }
+
+// ─── DRAWING ───────────────────────────────────────────────────────────────
+function cellXY(w, d) {
+  return { x: w * STEP + PAD, y: d * STEP + PAD + 20 };
+}
+
+function drawGrid() {
+  // background
+  ctx.fillStyle = '#000010';
+  ctx.fillRect(0, 0, W, H);
+
+  // Month labels (simplified)
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  ctx.fillStyle = '#555';
+  ctx.font = '8px monospace';
+  for (let m = 0; m < 12; m++) {
+    ctx.fillText(months[m], m * (W / 12), 12);
+  }
+
+  // Contribution cells
+  for (let w = 0; w < COLS; w++) {
+    for (let d = 0; d < ROWS; d++) {
+      const {x, y} = cellXY(w, d);
+      const dot    = dots[w][d];
+      if (dot.eaten) {
+        ctx.fillStyle = '#0a0a1a';
+      } else {
+        ctx.fillStyle = CONTRIBUTION_COLORS[dot.tier];
+      }
+      ctx.fillRect(x, y, CELL, CELL);
+
+      // Power pellet glow
+      if (!dot.eaten && dot.power) {
+        ctx.save();
+        ctx.shadowBlur  = 8;
+        ctx.shadowColor = '#39d353';
+        ctx.fillStyle   = '#7fff00';
+        ctx.fillRect(x+2, y+2, CELL-4, CELL-4);
+        ctx.restore();
+      }
+
+      // Dot overlay for active uneaten cells
+      if (!dot.eaten && dot.active && !dot.power) {
+        const pulse = 0.6 + 0.4 * Math.sin(Date.now() / 400 + w + d);
+        ctx.globalAlpha = pulse * 0.5;
+        ctx.fillStyle   = '#fff';
+        const cx = x + CELL/2, cy = y + CELL/2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+}
+
+function drawPacman() {
+  const {x, y} = cellXY(pacX, pacY);
+  const cx = x + CELL/2, cy = y + CELL/2, r = CELL/2 - 1;
+
+  pacMouth = (pacMouth + 0.18) % (Math.PI / 2);
+  const open = Math.abs(Math.sin(pacMouth)) * 0.4;
+
+  const angles = [0, Math.PI/2, Math.PI, -Math.PI/2]; // right, down, left, up
+  let dirIdx = 0;
+  if      (pacDX ===  1) dirIdx = 0;
+  else if (pacDY ===  1) dirIdx = 1;
+  else if (pacDX === -1) dirIdx = 2;
+  else if (pacDY === -1) dirIdx = 3;
+  const angle = angles[dirIdx];
+
+  // Glow
+  ctx.save();
+  ctx.shadowBlur  = powerTimer > 0 ? 18 : 8;
+  ctx.shadowColor = powerTimer > 0 ? '#ff0' : '#FFE000aa';
+
+  ctx.fillStyle = '#FFE000';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.arc(cx, cy, r, angle + open, angle + Math.PI * 2 - open);
+  ctx.closePath();
+  ctx.fill();
+
+  // Eye
+  const eyeAngle = angle - Math.PI * 0.35;
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(cx + Math.cos(eyeAngle) * r * 0.55, cy + Math.sin(eyeAngle) * r * 0.55, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawGhosts(dt) {
+  for (const g of ghosts) {
+    const {x, y} = cellXY(g.cx, g.cy);
+    const cx = x + CELL/2, cy = y + CELL/2, r = CELL/2 - 1;
+    const scared = powerTimer > 0;
+
+    ctx.save();
+    ctx.shadowBlur  = 6;
+    ctx.shadowColor = scared ? '#00f' : g.color + '88';
+    ctx.fillStyle   = scared ? (powerTimer < 2000 && (Date.now()/200|0) % 2 ? '#fff' : '#0000cc') : g.color;
+
+    ctx.beginPath();
+    ctx.arc(cx, cy - 1, r, Math.PI, 0);
+    // wavy skirt
+    const skirtY = cy - 1 + r;
+    const seg    = (CELL - 2) / 3;
+    ctx.lineTo(x + CELL - 1, skirtY);
+    for (let i = 2; i >= 0; i--) {
+      const mx = x + 1 + seg * i + seg / 2;
+      const wy = i % 2 === 0 ? skirtY - 3 : skirtY + 1;
+      ctx.quadraticCurveTo(mx, wy, x + 1 + seg * i, skirtY);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // Eyes
+    if (!scared) {
+      [[cx - 3, cy - 2],[cx + 2, cy - 2]].forEach(([ex, ey]) => {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.ellipse(ex, ey, 2.5, 3, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#0000bb';
+        ctx.beginPath(); ctx.arc(ex + g.dx * 1.2, ey + g.dy * 1.2, 1.3, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+    ctx.restore();
+  }
+}
+
+function drawOverlay() {
+  if (state === 'idle') {
+    ctx.fillStyle = 'rgba(0,0,16,0.65)';
+    ctx.fillRect(0, 20, W, H - 20);
+    ctx.fillStyle = '#FFE000';
+    ctx.font      = '14px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('PRESS START', W/2, H/2 - 10);
+    ctx.font      = '8px "Press Start 2P", monospace';
+    ctx.fillStyle = '#00FFFF';
+    ctx.fillText('EAT ALL COMMITS!', W/2, H/2 + 14);
+    ctx.textAlign = 'left';
+  }
+  if (state === 'paused') {
+    ctx.fillStyle = 'rgba(0,0,16,0.55)';
+    ctx.fillRect(0, 20, W, H - 20);
+    ctx.fillStyle = '#FFE000';
+    ctx.font      = '14px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('PAUSED', W/2, H/2);
+    ctx.textAlign = 'left';
+  }
+  if (state === 'dead') {
+    ctx.fillStyle = 'rgba(0,0,16,0.6)';
+    ctx.fillRect(0, 20, W, H - 20);
+    ctx.font      = '14px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#FF0000';
+    ctx.fillText(lives > 0 ? 'OOPS...' : 'GAME OVER', W/2, H/2 - 10);
+    ctx.font      = '7px "Press Start 2P", monospace';
+    ctx.fillStyle = '#aaa';
+    ctx.fillText(lives > 0 ? 'CONTINUING...' : 'PRESS RESET', W/2, H/2 + 10);
+    ctx.textAlign = 'left';
+  }
+  if (state === 'win') {
+    ctx.fillStyle = 'rgba(0,0,16,0.6)';
+    ctx.fillRect(0, 20, W, H - 20);
+    ctx.font      = '14px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#39d353';
+    ctx.fillText('YOU WIN!', W/2, H/2 - 16);
+    ctx.font      = '8px "Press Start 2P", monospace';
+    ctx.fillStyle = '#FFE000';
+    ctx.fillText(`SCORE: ${score}`, W/2, H/2 + 4);
+    ctx.fillStyle = '#00FFFF';
+    ctx.fillText(`BEST STREAK: ${bestStreak}`, W/2, H/2 + 20);
+    ctx.textAlign = 'left';
+  }
+}
+
+// ─── MOVEMENT LOGIC ────────────────────────────────────────────────────────
+let pacTimer = 0;
+const PAC_SPEED = 180; // ms per cell
+
+let ghostTimer = 0;
+const GHOST_SPEED = 320; // ms per cell
+
+function movePacman(dt) {
+  pacTimer += dt;
+  if (pacTimer < PAC_SPEED) return;
+  pacTimer -= PAC_SPEED;
+
+  // Try queued direction first
+  const nx = pacX + nextDX, ny = pacY + nextDY;
+  if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS) {
+    pacDX = nextDX; pacDY = nextDY;
+  }
+
+  const mx = pacX + pacDX, my = pacY + pacDY;
+  // Wrap horizontally
+  if (mx < 0)    { pacX = COLS - 1; } 
+  else if (mx >= COLS) { pacX = 0; }
+  else if (my < 0 || my >= ROWS) { /* hit vertical border, stop */ }
+  else           { pacX = mx; pacY = my; }
+
+  // Eat dot
+  const dot = dots[pacX]?.[pacY];
+  if (dot && dot.active && !dot.eaten) {
+    dot.eaten = true;
+    eaten++;
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+    const pts = POINT_VALUES[dot.tier] * (powerTimer > 0 ? 2 : 1);
+    score += pts;
+    if (dot.power) powerTimer = 8000;
+    updateHUD();
+    if (eaten >= totalDots) { state = 'win'; setMsg('ALL COMMITS EATEN! 🎉'); return; }
+  } else {
+    streak = 0;
+  }
+}
+
+function moveGhosts(dt) {
+  ghostTimer += dt;
+  const speed = powerTimer > 0 ? GHOST_SPEED * 1.5 : GHOST_SPEED;
+  if (ghostTimer < speed) return;
+  ghostTimer -= speed;
+
+  for (const g of ghosts) {
+    g.scatter--;
+    if (g.scatter <= 0) {
+      g.dx = [-1,1,0,0][Math.random()*4|0];
+      g.dy = [0,0,-1,1][Math.random()*4|0];
+      g.scatter = 60 + (Math.random() * 120 | 0);
+    }
+
+    // Simple pathfinding: 30% chance to chase pac, else random
+    if (!powerTimer && Math.random() < 0.3) {
+      const ax = Math.sign(pacX - g.cx), ay = Math.sign(pacY - g.cy);
+      if (ax !== 0 || ay !== 0) { g.dx = ax; g.dy = ay; }
+    }
+
+    const nx = g.cx + g.dx, ny = g.cy + g.dy;
+    if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS) {
+      g.cx = nx; g.cy = ny;
+    } else {
+      g.dx = -g.dx; g.dy = -g.dy;
+    }
+  }
+
+  // Collision check
+  for (const g of ghosts) {
+    if (g.cx === pacX && g.cy === pacY) {
+      if (powerTimer > 0) {
+        // eat ghost
+        score += 200;
+        g.cx = COLS/2|0; g.cy = ROWS/2|0;
+        updateHUD();
+      } else {
+        // pac dies
+        lives--;
+        streak = 0;
+        updateHUD();
+        state = 'dead';
+        deathTimer = 1800;
+        setMsg(lives > 0 ? `${lives} LIVES REMAINING` : 'GAME OVER!');
+        return;
+      }
+    }
+  }
+}
+
+// ─── GAME LOOP ─────────────────────────────────────────────────────────────
+function loop(ts) {
+  animFrame = requestAnimationFrame(loop);
+  const dt = lastTime ? ts - lastTime : 0;
+  lastTime  = ts;
+
+  if (state === 'playing') {
+    if (powerTimer > 0) powerTimer = Math.max(0, powerTimer - dt);
+
+    if (state === 'dead') {
+      // handled below
+    } else {
+      movePacman(dt);
+      moveGhosts(dt);
+    }
+  }
+
+  if (state === 'dead') {
+    deathTimer -= dt;
+    if (deathTimer <= 0) {
+      if (lives > 0) {
+        // respawn
+        pacX = 0; pacY = 0; pacDX = 1; pacDY = 0; nextDX = 1; nextDY = 0;
+        state = 'playing';
+        setMsg('');
+      } else {
+        state = 'dead'; // permanent
+      }
+    }
+  }
+
+  drawGrid();
+  if (state !== 'idle') {
+    drawGhosts(dt);
+    drawPacman();
+  }
+  drawOverlay();
+}
+
+// ─── INPUT ─────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const map = {
+    ArrowRight: [1,0], ArrowLeft: [-1,0],
+    ArrowDown:  [0,1], ArrowUp:   [0,-1],
+    d: [1,0], a: [-1,0], s: [0,1], w: [0,-1],
+  };
+  if (map[e.key]) {
+    e.preventDefault();
+    [nextDX, nextDY] = map[e.key];
+    if (state === 'idle') startGame();
+  }
+  if (e.key === ' ') { e.preventDefault(); togglePause(); }
+});
+
+document.querySelectorAll('.dpad [data-dir]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const dirs = { up:[0,-1], down:[0,1], left:[-1,0], right:[1,0] };
+    [nextDX, nextDY] = dirs[btn.dataset.dir];
+    if (state === 'idle') startGame();
+  });
+});
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  if (state === 'idle' || state === 'win' || (state === 'dead' && lives === 0)) startGame();
+  else togglePause();
+});
+document.getElementById('btn-pause').addEventListener('click', togglePause);
+document.getElementById('btn-reset').addEventListener('click', resetGame);
+
+function startGame() {
+  state = 'playing';
+  setMsg('');
+}
+
+function togglePause() {
+  if (state === 'playing') { state = 'paused'; setMsg('PAUSED'); }
+  else if (state === 'paused') { state = 'playing'; lastTime = null; setMsg(''); }
+}
+
+function resetGame() {
+  cancelAnimationFrame(animFrame);
+  initGame();
+  animFrame = requestAnimationFrame(loop);
+  setMsg('PRESS SPACE OR TAP START TO PLAY');
+}
+
+// ─── BOOT ──────────────────────────────────────────────────────────────────
+initGame();
+animFrame = requestAnimationFrame(loop);
+</script>
+</body>
+</html>
