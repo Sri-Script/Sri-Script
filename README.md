@@ -46,12 +46,8 @@
 <!-- ANALYTICS SECTION -->
 <h3 align="center">→ Analytics</h3>
 <div align="center">
-  <!-- GitHub Stats Card -->
-<img src="https://github-readme-stats.vercel.app/api?username=Sri-tamed&show_icons=true&theme=tokyonight&hide_border=true&include_all_commits=true&count_private=true&rank_icon=github" alt="GitHub Stats" width="49%" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Sri-tamed&layout=compact&theme=tokyonight&hide_border=true" alt="Top Languages" width="49%" />
-<br/><br/>
-  <!-- GitHub Streak Stats — using git.io/streak-stats (most reliable) -->
-<img src="https://streak-stats.demolab.com?user=Sri-tamed&theme=tokyonight&hide_border=true&date_format=j%20M%5B%20Y%5D" alt="GitHub Streak" />
+  <!-- Fun sticker -->
+<img src="https://user-images.githubusercontent.com/74038190/229223263-cf2e4b07-2615-4f87-9c38-e37600f8381a.gif" width="400" alt="coding gif"/>
 <br/><br/>
   <!-- Contribution Graph -->
 <img src="https://github-readme-activity-graph.vercel.app/graph?username=Sri-tamed&theme=react-dark&hide_border=true&area=true&color=00b4d8&line=c77dff&point=ffffff" alt="Contribution Graph" />
