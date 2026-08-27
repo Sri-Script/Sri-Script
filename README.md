@@ -4,7 +4,6 @@
   </a>
 </h1>
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=24&duration=3000&pause=900&color=00C2FF&center=true&vCenter=true&width=760&lines=Hola%2C+I'm+Sritama+%F0%9F%91%8B;Android+%26+Flutter+App+Developer;Building+accessible+mobile+experiences;Flutter+%E2%80%A2+Kotlin+%E2%80%A2+Compose+%E2%80%A2+KMP)](https://git.io/typing-svg)
-
 <h3 align="center">A passionate and budding Application Developer from India</h3>
 
 <!-- Top banner GIF — full width -->
