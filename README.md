@@ -1,8 +1,3 @@
-<h1 align="center">
-  <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.herokuapp.com?lines=Hello+there!;I'm+Sritama;Glad+to+have+you+here!&center=true&size=24&height=45">
-  </a>
-</h1>
 <div align="center">
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=24&duration=3000&pause=900&color=00C2FF&center=true&vCenter=true&width=760&lines=Hola%2C+I'm+Sritama+%F0%9F%91%8B;Android+%26+Flutter+App+Developer;Building+accessible+mobile+experiences;Flutter+%E2%80%A2+Kotlin+%E2%80%A2+Compose+%E2%80%A2+KMP)](https://git.io/typing-svg)
 
@@ -45,16 +40,16 @@
 <div align="center">
   <picture>
    <source media="(prefers-color-scheme: dark)"
-        srcset="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/pacman-contribution-graph-dark.svg" />
+        srcset="https://raw.githubusercontent.com/Sri-Script/Sri-Script/output/pacman-contribution-graph-dark.svg" />
 <source media="(prefers-color-scheme: light)"
-        srcset="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/pacman-contribution-graph.svg" />
+        srcset="https://raw.githubusercontent.com/Sri-Script/Sri-Script/output/pacman-contribution-graph.svg" />
 <img alt="Pac-Man eating my GitHub contributions"
-     src="https://raw.githubusercontent.com/Sri-tamed/Sri-tamed/output/pacman-contribution-graph.svg" />
+     src="https://raw.githubusercontent.com/Sri-Script/Sri-Script/output/pacman-contribution-graph.svg" />
   </picture>
 
   <!-- INTERACTIVE GAME BUTTON -->
   <p>
-    <a href="https://Sri-tamed.github.io/Sri-tamed/">
+    <a href="https://Sri-Script.github.io/Sri-Script/">
       <img src="https://img.shields.io/badge/🕹%20Play%20the%20Interactive%20Game-%23FFE000?style=for-the-badge&labelColor=000010&color=FFE000&logoColor=black" alt="Play the Interactive Pac-Man Game" />
     </a>
   </p>
@@ -70,12 +65,12 @@
   <!-- Fun sticker + Streak Stats side by side -->
   <img src="https://user-images.githubusercontent.com/74038190/229223263-cf2e4b07-2615-4f87-9c38-e37600f8381a.gif" width="38%" alt="coding gif"/>
   &nbsp;&nbsp;
-  <img src="https://streak-stats.demolab.com?user=Sri-tamed&theme=tokyonight&hide_border=true&date_format=j%20M%5B%20Y%5D" width="55%" alt="GitHub Streak Stats" />
+  <img src="https://streak-stats.demolab.com?user=Sri-Script&theme=tokyonight&hide_border=true&date_format=j%20M%5B%20Y%5D" width="55%" alt="GitHub Streak Stats" />
 
   <br/><br/>
 
   <!-- Contribution Graph -->
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=Sri-tamed&theme=react-dark&hide_border=true&area=true&color=00b4d8&line=c77dff&point=ffffff" alt="Contribution Graph" />
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=Sri-Script&theme=react-dark&hide_border=true&area=true&color=00b4d8&line=c77dff&point=ffffff" alt="Contribution Graph" />
 
 </div>
 
